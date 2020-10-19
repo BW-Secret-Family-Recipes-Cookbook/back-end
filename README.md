@@ -12,7 +12,7 @@ This is the backend database for the "secret family recipes" build week project
 
 Requires username, password, and headers as shown [here](https://github.com/LambdaSchool/java-js-front-end/blob/master/js-front-end/src/components/Login.js).
 
-Returns an OAuth2 authorization token. This token is required for all endpoints except /login and /createnewuser.
+Returns an OAuth2 authorization token. **This token is required for all endpoints except /login and /createnewuser.**
 
 `GET /logout`
 
@@ -33,11 +33,13 @@ Creates a new user with the specified information and the role "user". Authorize
 
 #### Recipes
 
-`GET recipes/all`
+`GET /recipes/all`
 
-Returns all recipes that the user is authorized to see. For admins, this is all recipes. For users, this is recipes where they are the main user and/or an invited user.
+Returns all recipes that the user is authorized to see. For admins, this is all recipes. For users, this is recipes where they are the owner or guest.
 
-`POST recipes/new`
+`POST /recipes/new`
+
+Creates a new recipe.
 
 Requires:
 ```json
@@ -48,15 +50,38 @@ Requires:
     "category": "category",
     "ingredients":
     [
-        "ingredient 1",
-        "ingredient 2"
+        {
+            "ingredient": {
+                "name": "ingredient 1"
+            }
+        },
+        {
+            "ingredient": {
+                "name": "ingredient 2"
+            }
+        }
+    ],
+    "guests":
+    [
+        {
+            "user": {
+                "username": "guest name 1"
+            }
+        },
+        {
+            "user": {
+                "username": "guest name 2"
+            }
+        }
     ]
 }
-````
+```
 
-Returns the recipe that was just created.
+Guests (if provided) must be existing users. Ingredients do not have to be existing ingredients.
 
-`PUT recipes/{id}`
+Returns the recipe that was just created. Owner will automatically be set to the logged-in user.
+
+`PUT /recipes/{id}`
 
 Updates the recipe with id {id}.
 
@@ -69,15 +94,38 @@ Requires all of:
     "category": "category",
     "ingredients":
     [
-        "ingredient 1",
-        "ingredient 2"
+        {
+            "ingredient": {
+                "name": "ingredient 1"
+            }
+        },
+        {
+            "ingredient": {
+                "name": "ingredient 2"
+            }
+        }
+    ],
+    "guests":
+    [
+        {
+            "user": {
+                "username": "guest name 1"
+            }
+        },
+        {
+            "user": {
+                "username": "guest name 2"
+            }
+        }
     ]
 }
 ```
 
+The recipe must belong to the currently logged-in user.
+
 Returns the updated recipe.
 
-`PATCH recipes/{id}`
+`PATCH /recipes/{id}`
 
 Updates the recipe with id {id}.
 
@@ -90,15 +138,38 @@ Requires any of:
     "category": "category",
     "ingredients":
     [
-        "ingredient 1",
-        "ingredient 2"
+        {
+            "ingredient": {
+                "name": "ingredient 1"
+            }
+        },
+        {
+            "ingredient": {
+                "name": "ingredient 2"
+            }
+        }
+    ],
+    "guests":
+    [
+        {
+            "user": {
+                "username": "guest name 1"
+            }
+        },
+        {
+            "user": {
+                "username": "guest name 2"
+            }
+        }
     ]
 }
 ```
 
+The recipe must belong to the currently logged-in user.
+
 Returns the updated recipe.
 
-`DELETE recipes/{id}`
+`DELETE /recipes/{id}`
 
 Deletes the recipe with id {id}.
 
@@ -131,6 +202,7 @@ Userrecipe
 
 Recipe
 - recipeid (long, unique)
+- owner (long (userid))
 - title (String, unique, non-null)
 - source (String)
 - instructions (String)
@@ -139,16 +211,19 @@ Recipe
 Ingredient
 - ingredientid (long)
 - name (String, non-null)
-- qty ()
 
 Recipeingredient
 - recipeid (long)
 - ingredientid (long)
+
+Userrecipe
+- userid (long)
+- recipeid (long)
 
 #### Relationships
 
 - Many users : many roles
 - Many emails : one user
 - One user : many recipes (as owner)
-- Many users : many recipes (as invitees)
+- Many users : many recipes (as guests)
 - Many recipes : many ingredients
