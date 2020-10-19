@@ -33,7 +33,7 @@ public class RecipeController {
         User current = userRepository.findByUsername(SecurityContextHolder.getContext()
                         .getAuthentication().getName());
 
-        result = recipeService.findByOwnerOrGuest(current);
+        result = recipeService.findByOwner(current);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

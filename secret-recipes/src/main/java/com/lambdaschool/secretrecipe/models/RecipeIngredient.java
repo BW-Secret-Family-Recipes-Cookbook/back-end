@@ -29,7 +29,7 @@ public class RecipeIngredient extends Auditable implements Serializable {
     public RecipeIngredient() {
     }
 
-    public RecipeIngredient(@NotNull Recipe recipe, @NotNull Ingredient ingredient) {
+    public RecipeIngredient(Recipe recipe, Ingredient ingredient) {
         this.recipe = recipe;
         this.ingredient = ingredient;
     }
@@ -55,8 +55,8 @@ public class RecipeIngredient extends Auditable implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecipeIngredient that = (RecipeIngredient) o;
-        return Objects.equals(getRecipe().getRecipeid(), that.getRecipe().getRecipeid()) &&
-                Objects.equals(getIngredient().getIngredientid(), that.getIngredient().getIngredientid());
+        return ((recipe == null) ? 0 : recipe.getRecipeid()) == ((that.recipe == null) ? 0 : that.recipe.getRecipeid()) &&
+                ((ingredient == null) ? 0 : ingredient.getIngredientid()) == ((that.ingredient == null) ? 0 : that.ingredient.getIngredientid());
     }
 
     @Override

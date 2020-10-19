@@ -99,8 +99,8 @@ public class SeedData
         rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("chicken")));
         rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("parmesan")));
         u2.getOwnerrecipes().add(rec1);
-        
-        recipeService.save(rec1);
+
+        recipeService.saveDirect(rec1);
 
         Recipe rec2 = new Recipe("Junior's fruit cocktail", "Junior", "put the lime in the coconut and shake it all up", "drinks");
         rec2.setOwner(u3);
@@ -108,6 +108,6 @@ public class SeedData
         rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("coconut")));
         u3.getOwnerrecipes().add(rec2);
 
-        recipeService.save(rec2);
+        recipeService.saveDirect(rec2);
     }
 }

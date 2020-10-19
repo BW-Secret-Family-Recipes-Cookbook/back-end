@@ -33,8 +33,8 @@ public class RecipeIngredientId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecipeIngredientId that = (RecipeIngredientId) o;
-        return getRecipe() == that.getRecipe() &&
-                getIngredient() == that.getIngredient();
+        return recipe == that.recipe &&
+                ingredient == that.ingredient;
     }
 
     @Override

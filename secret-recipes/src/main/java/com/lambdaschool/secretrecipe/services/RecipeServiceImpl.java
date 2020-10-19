@@ -82,7 +82,41 @@ public class RecipeServiceImpl implements RecipeService {
 
         for(RecipeIngredient ri : recipe.getIngredients())
         {
-            Ingredient ing = ingredientRepository.findByName(ri.getRecipe().getName());
+            Ingredient ing = ingredientRepository.findByName(ri.getIngredient().getName());
+            if(ing == null)
+            {
+                ing = ingredientRepository.save(new Ingredient(ri.getIngredient().getName()));
+            }
+            newRecipe.getIngredients().add(new RecipeIngredient(newRecipe, ing));
+        }
+
+        for(UserRecipe ur : recipe.getGuests())
+        {
+            User guest = userRepository.findByUsername(ur.getUser().getUsername());
+            if(guest == null)
+            {
+                throw new ResourceNotFoundException("Cannot find user named " + ur.getUser().getUsername() + " as guest.");
+            }
+            newRecipe.getGuests().add(new UserRecipe(guest, newRecipe));
+        }
+
+        return recipeRepository.save(newRecipe);
+    }
+
+    @Override
+    public Recipe saveDirect(Recipe recipe) {
+        Recipe newRecipe = new Recipe();
+
+        newRecipe.setOwner(userRepository.findByUsername(recipe.getOwner().getUsername()));
+
+        newRecipe.setName(recipe.getName());
+        newRecipe.setCategory(recipe.getCategory());
+        newRecipe.setSource(recipe.getSource());
+        newRecipe.setInstructions(recipe.getInstructions());
+
+        for(RecipeIngredient ri : recipe.getIngredients())
+        {
+            Ingredient ing = ingredientRepository.findByName(ri.getIngredient().getName());
             if(ing == null)
             {
                 ing = ingredientRepository.save(new Ingredient(ri.getIngredient().getName()));

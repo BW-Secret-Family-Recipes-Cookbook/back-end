@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "recipes")
+@Table(name = "ingredients")
 public class Ingredient extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

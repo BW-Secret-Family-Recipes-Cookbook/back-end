@@ -72,13 +72,13 @@ public class User
         allowSetters = true)
     private Set<UserRoles> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties(value = "user", allowSetters = true)
-    private List<Recipe> ownerrecipes;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties(value = "owner", allowSetters = true)
+    private List<Recipe> ownerrecipes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = "user", allowSetters = true)
-    private List<UserRecipe> guestrecipes;
+    private List<UserRecipe> guestrecipes = new ArrayList<>();
 
     /**
      * Default constructor used primarily by the JPA.
