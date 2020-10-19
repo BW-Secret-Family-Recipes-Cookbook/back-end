@@ -1,1 +1,154 @@
-# back-end
+# Secret Family Recipes backend
+
+## Introduction
+
+This is the backend database for the "secret family recipes" build week project
+
+### Apis
+
+#### Users
+
+`POST /login`
+
+Requires username, password, and headers as shown [here](https://github.com/LambdaSchool/java-js-front-end/blob/master/js-front-end/src/components/Login.js).
+
+Returns an OAuth2 authorization token. This token is required for all endpoints except /login and /createnewuser.
+
+`GET /logout`
+
+Logs out the user. The user's existing token will be invalid and should be deleted from the frontend. Nothing is returned from this endpoint.
+
+`POST /createnewuser`
+
+Requires:
+```json
+{
+    "username": "new username",
+    "password": "new user's password",
+    "primaryemail": "primary email address"
+}
+```
+
+Creates a new user with the specified information and the role "user". Authorizes the new user and returns their authorization token.
+
+#### Recipes
+
+`GET recipes/all`
+
+Returns all recipes that the user is authorized to see. For admins, this is all recipes. For users, this is recipes where they are the main user and/or an invited user.
+
+`POST recipes/new`
+
+Requires:
+```json
+{
+    "title": "new recipe title",
+    "source": "recipe source",
+    "instructions": "instructions",
+    "category": "category",
+    "ingredients":
+    [
+        "ingredient 1",
+        "ingredient 2"
+    ]
+}
+````
+
+Returns the recipe that was just created.
+
+`PUT recipes/{id}`
+
+Updates the recipe with id {id}.
+
+Requires all of:
+```json
+{
+    "title": "new recipe title",
+    "source": "recipe source",
+    "instructions": "instructions",
+    "category": "category",
+    "ingredients":
+    [
+        "ingredient 1",
+        "ingredient 2"
+    ]
+}
+```
+
+Returns the updated recipe.
+
+`PATCH recipes/{id}`
+
+Updates the recipe with id {id}.
+
+Requires any of:
+```json
+{
+    "title": "new recipe title",
+    "source": "recipe source",
+    "instructions": "instructions",
+    "category": "category",
+    "ingredients":
+    [
+        "ingredient 1",
+        "ingredient 2"
+    ]
+}
+```
+
+Returns the updated recipe.
+
+`DELETE recipes/{id}`
+
+Deletes the recipe with id {id}.
+
+Returns nothing.
+
+### Database models
+
+User
+- userid (long)
+- username (String, unique, non-null)
+- password (String, encrypted)
+- primaryemail (String)
+
+Role
+- roleid (long)
+- name (String)
+
+Userrole
+- userid (long)
+- roleid (long)
+
+Useremail
+- useremailid (long)
+- userid (long)
+- useremail (String)
+
+Userrecipe
+- userid (long)
+- recipeid (long)
+
+Recipe
+- recipeid (long, unique)
+- title (String, unique, non-null)
+- source (String)
+- instructions (String)
+- category (String)
+
+Ingredient
+- ingredientid (long)
+- name (String, non-null)
+- qty ()
+
+Recipeingredient
+- recipeid (long)
+- ingredientid (long)
+
+#### Relationships
+
+- Many users : many roles
+- Many emails : one user
+- One user : many recipes (as owner)
+- Many users : many recipes (as invitees)
+- Many recipes : many ingredients
