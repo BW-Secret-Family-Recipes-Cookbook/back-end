@@ -139,9 +139,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Recipe update(Recipe recipe, Long id) {
-        Recipe newRecipe = recipeRepository.findById(recipe.getRecipeid()).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + recipe.getRecipeid() + "."));
-
-        newRecipe.setRecipeid(id);
+        Recipe newRecipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + recipe.getRecipeid() + "."));
 
         if(recipe.getName() != null) newRecipe.setName(recipe.getName());
         if(recipe.getCategory() != null) newRecipe.setCategory(recipe.getCategory());
