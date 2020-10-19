@@ -27,6 +27,16 @@ public class Recipe extends Auditable{
     @JsonIgnoreProperties(value = "recipe", allowSetters = true)
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "userid")
+    @JsonIgnoreProperties(value = "ownerrecipes", allowSetters = true)
+    private User owner;
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties(value = "recipe", allowSetters = true)
+    private List<UserRecipe> guests = new ArrayList<>();
+
     public Recipe() {
     }
 
@@ -83,5 +93,21 @@ public class Recipe extends Auditable{
 
     public void setIngredients(List<RecipeIngredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public List<UserRecipe> getGuests() {
+        return guests;
+    }
+
+    public void setGuests(List<UserRecipe> guests) {
+        this.guests = guests;
     }
 }
