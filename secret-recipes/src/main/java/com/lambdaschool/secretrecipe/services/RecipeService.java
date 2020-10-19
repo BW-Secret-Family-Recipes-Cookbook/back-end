@@ -9,8 +9,8 @@ public interface RecipeService {
     List<Recipe> findAll();
     Recipe findById(Long id);
     Recipe findByName(String name);
-    //List<Recipe> findByOwner(User user);
-    //List<Recipe> findByOwnerOrGuest(User user);
+    List<Recipe> findByOwner(User user);
+    List<Recipe> findByOwnerOrGuest(User user);
 
     Recipe save(Recipe recipe);
 
