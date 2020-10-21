@@ -1,6 +1,7 @@
 package com.lambdaschool.secretrecipe.controllers;
 
 import com.lambdaschool.secretrecipe.models.Recipe;
+import com.lambdaschool.secretrecipe.models.RecipeMinimal;
 import com.lambdaschool.secretrecipe.models.User;
 import com.lambdaschool.secretrecipe.repository.UserRepository;
 import com.lambdaschool.secretrecipe.services.RecipeService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,13 +29,12 @@ public class RecipeController {
             produces = "application/json")
     public ResponseEntity<?> listAuthedRecipes()
     {
-        List<Recipe> result;
         // Todo: find all if logged in as Admin
 
         User current = userRepository.findByUsername(SecurityContextHolder.getContext()
                         .getAuthentication().getName());
 
-        result = recipeService.findByOwner(current);
+        List<RecipeMinimal> result = recipeService.findMinimalsByOwner(current);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -41,29 +42,29 @@ public class RecipeController {
 //    `POST recipes/new`
 //    Creates a new recipe.
     @PostMapping(value = "/new", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<?> postNewRecipe(@RequestBody Recipe recipe)
+    public ResponseEntity<?> postNewRecipe(@RequestBody RecipeMinimal minimal)
     {
-        Recipe result = recipeService.save(recipe);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+        Recipe result = recipeService.saveFromMinimal(minimal);
+        return new ResponseEntity<>(new RecipeMinimal(result), HttpStatus.CREATED);
     }
 
 //    `PUT recipes/{id}`
 //    Updates the recipe with id {id}.
     @PutMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<?> putRecipe(@RequestBody Recipe recipe, @PathVariable long id)
+    public ResponseEntity<?> putRecipe(@RequestBody RecipeMinimal minimal, @PathVariable long id)
     {
-        recipe.setRecipeid(id);
-        Recipe result = recipeService.save(recipe);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        minimal.setRecipeid(id);
+        Recipe result = recipeService.saveFromMinimal(minimal);
+        return new ResponseEntity<>(new RecipeMinimal(result), HttpStatus.OK);
     }
 
 //    `PATCH recipes/{id}`
 //    Updates the recipe with id {id}.
     @PatchMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<?> patchRecipe(@RequestBody Recipe recipe, @PathVariable long id)
+    public ResponseEntity<?> patchRecipe(@RequestBody RecipeMinimal minimal, @PathVariable long id)
     {
-        Recipe result = recipeService.update(recipe, id);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        Recipe result = recipeService.updateFromMinimal(minimal, id);
+        return new ResponseEntity<>(new RecipeMinimal(result), HttpStatus.OK);
     }
 
 //    `DELETE recipes/{id}`

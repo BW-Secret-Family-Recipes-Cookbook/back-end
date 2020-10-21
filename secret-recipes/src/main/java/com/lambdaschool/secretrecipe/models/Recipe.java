@@ -1,6 +1,9 @@
 package com.lambdaschool.secretrecipe.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lambdaschool.secretrecipe.repository.IngredientRepository;
+import com.lambdaschool.secretrecipe.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,6 +41,15 @@ public class Recipe extends Auditable{
     private List<UserRecipe> guests = new ArrayList<>();
 
     public Recipe() {
+    }
+
+    public Recipe(RecipeMinimal minimal)
+    {
+        name = minimal.getName();
+        category = minimal.getCategory();
+        source = minimal.getSource();
+        instructions = minimal.getInstructions();
+        if(minimal.getRecipeid() != 0) recipeid = minimal.getRecipeid();
     }
 
     public Recipe(@NotNull String name, String source, String instructions, String category) {
