@@ -35,7 +35,11 @@ Creates a new user with the specified information and the role "user". Authorize
 
 `GET /recipes/all`
 
-Returns all recipes that the user is authorized to see. For admins, this is all recipes. For users, this is recipes where they are the owner or guest.
+Returns all recipes where the logged-in user is the owner or guest.
+
+`GET /recipes/{id}`
+
+Returns the recipe with id {id}. This does not require the user to be the owner or guest.
 
 `POST /recipes/new`
 

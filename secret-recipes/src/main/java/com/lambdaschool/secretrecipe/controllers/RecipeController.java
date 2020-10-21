@@ -5,6 +5,7 @@ import com.lambdaschool.secretrecipe.models.RecipeMinimal;
 import com.lambdaschool.secretrecipe.models.User;
 import com.lambdaschool.secretrecipe.repository.UserRepository;
 import com.lambdaschool.secretrecipe.services.RecipeService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,16 @@ public class RecipeController {
                         .getAuthentication().getName());
 
         List<RecipeMinimal> result = recipeService.findMinimalsByOwner(current);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // `GET recipes/{id}
+    // returns a single recipe
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<?> getRecipeById(@PathVariable long id)
+    {
+        RecipeMinimal result = recipeService.findMinimalById(id);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
