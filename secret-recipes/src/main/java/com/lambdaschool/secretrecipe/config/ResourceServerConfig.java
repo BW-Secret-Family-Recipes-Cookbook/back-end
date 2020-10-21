@@ -75,6 +75,7 @@ public class ResourceServerConfig
             .antMatchers("/users/**",
                 "/useremails/**",
                 "/oauth/revoke-token",
+                "/recipes/**",
                 "/logout")
             .authenticated()
             .antMatchers("/roles/**")

@@ -30,7 +30,7 @@ public class Recipe extends Auditable{
     @ManyToOne
     @NotNull
     @JoinColumn(name = "userid")
-    @JsonIgnoreProperties(value = "ownerrecipes", allowSetters = true)
+    @JsonIgnoreProperties(value = {"ownerrecipes", "roles", "useremails", "guestrecipes", "primaryemail"}, allowSetters = true) // only vital information
     private User owner;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)

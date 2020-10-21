@@ -15,7 +15,7 @@ public class UserRecipe extends Auditable implements Serializable {
     @ManyToOne
     @NotNull
     @JoinColumn(name = "userid")
-    @JsonIgnoreProperties(value = "guestrecipes", allowSetters = true)
+    @JsonIgnoreProperties(value = {"recipe", "ownerrecipes", "roles", "useremails", "guestrecipes", "primaryemail"}, allowSetters = true)
     private User user;
 
     @Id
