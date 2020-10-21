@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 // @EnableJpaAuditing
 @SpringBootApplication
-public class FoundationApplication
+public class SecretRecipeApplication
 {
     /**
      * Main method to start the application.
