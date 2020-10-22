@@ -25,7 +25,9 @@ public class IngredientServiceImpl implements IngredientService{
 
     @Override
     public Ingredient findByName(String name) {
-        return ingredientRepository.findByName(name);
+        Ingredient i = ingredientRepository.findByName(name);
+        if(i == null) throw new ResourceNotFoundException("Could not find ingredient with name " + name + ".");
+        return i;
     }
 
     @Override

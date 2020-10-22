@@ -34,8 +34,24 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public List<RecipeMinimal> findAllMinimals() {
+        List<Recipe> fulls = findAll();
+        List<RecipeMinimal> result = new ArrayList<>();
+        for(Recipe r : fulls)
+        {
+            result.add(new RecipeMinimal(r));
+        }
+        return result;
+    }
+
+    @Override
     public Recipe findById(Long id) {
         return recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + id + "."));
+    }
+
+    @Override
+    public RecipeMinimal findMinimalById(Long id){
+        return new RecipeMinimal(findById(id));
     }
 
     @Override
@@ -44,14 +60,42 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public RecipeMinimal findMinimalByName(String name)
+    {
+        return new RecipeMinimal(findByName(name));
+    }
+
+    @Override
     public List<Recipe> findByOwner(User user) {
         return recipeRepository.findAllByOwner(user);
     }
 
     @Override
+    public List<RecipeMinimal> findMinimalsByOwner(User user) {
+        List<Recipe> fulls = findByOwner(user);
+        List<RecipeMinimal> result = new ArrayList<>();
+        for(Recipe r : fulls)
+        {
+            result.add(new RecipeMinimal(r));
+        }
+        return result;
+    }
+
+    @Override
     public List<Recipe> findByOwnerOrGuest(User user) {
-        return null; // NYI - figure out the @Query for "all recipes connected to a recipeUser connected to this user"
+        return null; // todo:  NYI - figure out the @Query for "all recipes connected to a recipeUser connected to this user"
         //return recipeRepository.findAllByOwner(user).addAll(recipeRepository.findAllByGuestsContains(new UserRecipe()));
+    }
+
+    @Override
+    public List<RecipeMinimal> findMinimalsByOwnerOrGuest(User user) {
+        List<Recipe> fulls = findByOwnerOrGuest(user);
+        List<RecipeMinimal> result = new ArrayList<>();
+        for(Recipe r : fulls)
+        {
+            result.add(new RecipeMinimal(r));
+        }
+        return result;
     }
 
     @Override
@@ -104,7 +148,51 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe saveDirect(Recipe recipe) {
+    public Recipe saveFromMinimal(RecipeMinimal minimal) {
+        Recipe newRecipe = new Recipe(minimal);
+
+        User current = userRepository.findByUsername(SecurityContextHolder.getContext()
+                .getAuthentication().getName());
+
+        if(minimal.getRecipeid() != 0)
+        {
+            Recipe oldRecipe = recipeRepository.findById(minimal.getRecipeid()).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + minimal.getRecipeid() + "."));
+
+            if(!current.getUsername().equalsIgnoreCase(oldRecipe.getOwner().getUsername()))
+            {
+                throw new AccessDeniedException("You cannot modify another user's recipe.");
+            }
+
+            newRecipe.setRecipeid(oldRecipe.getRecipeid());
+        }
+
+        newRecipe.setOwner(current);
+
+        for(String ingredient : minimal.getIngredients())
+        {
+            Ingredient ing = ingredientRepository.findByName(ingredient);
+            if(ing == null)
+            {
+                ing = ingredientRepository.save(new Ingredient(ingredient));
+            }
+            newRecipe.getIngredients().add(new RecipeIngredient(newRecipe, ing));
+        }
+
+        for(String guestname : minimal.getGuests())
+        {
+            User guest = userRepository.findByUsername(guestname);
+            if(guest == null)
+            {
+                throw new ResourceNotFoundException("Cannot find user named " + guestname + " as guest.");
+            }
+            newRecipe.getGuests().add(new UserRecipe(guest, newRecipe));
+        }
+
+        return recipeRepository.save(newRecipe);
+    }
+
+    @Override
+    public void saveDirect(Recipe recipe) {
         Recipe newRecipe = new Recipe();
 
         newRecipe.setOwner(userRepository.findByUsername(recipe.getOwner().getUsername()));
@@ -134,12 +222,12 @@ public class RecipeServiceImpl implements RecipeService {
             newRecipe.getGuests().add(new UserRecipe(guest, newRecipe));
         }
 
-        return recipeRepository.save(newRecipe);
+        recipeRepository.save(newRecipe);
     }
 
     @Override
     public Recipe update(Recipe recipe, Long id) {
-        Recipe newRecipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + recipe.getRecipeid() + "."));
+        Recipe newRecipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + id + "."));
 
         if(recipe.getName() != null) newRecipe.setName(recipe.getName());
         if(recipe.getCategory() != null) newRecipe.setCategory(recipe.getCategory());
@@ -163,6 +251,40 @@ public class RecipeServiceImpl implements RecipeService {
                 User guest = userRepository.findByUsername(ur.getUser().getUsername());
                 if (guest == null) {
                     throw new ResourceNotFoundException("Cannot find user named " + ur.getUser().getUsername() + " as guest.");
+                }
+                newRecipe.getGuests().add(new UserRecipe(guest, newRecipe));
+            }
+        }
+
+        return recipeRepository.save(newRecipe);
+    }
+
+    @Override
+    public Recipe updateFromMinimal(RecipeMinimal minimal, Long id) {
+        Recipe newRecipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Could not find recipe with id " + id + "."));
+
+        if(minimal.getName() != null) newRecipe.setName(minimal.getName());
+        if(minimal.getCategory() != null) newRecipe.setCategory(minimal.getCategory());
+        if(minimal.getSource() != null) newRecipe.setSource(minimal.getSource());
+        if(minimal.getInstructions() != null) newRecipe.setInstructions(minimal.getInstructions());
+
+        if(minimal.getIngredients().size() != 0) {
+            newRecipe.getIngredients().clear();
+            for (String ingredient : minimal.getIngredients()) {
+                Ingredient ing = ingredientRepository.findByName(ingredient);
+                if (ing == null) {
+                    ing = ingredientRepository.save(new Ingredient(ingredient));
+                }
+                newRecipe.getIngredients().add(new RecipeIngredient(newRecipe, ing));
+            }
+        }
+
+        if(minimal.getGuests().size() != 0) {
+            newRecipe.getGuests().clear();
+            for (String guestname : minimal.getGuests()) {
+                User guest = userRepository.findByUsername(guestname);
+                if (guest == null) {
+                    throw new ResourceNotFoundException("Cannot find user named " + guestname + " as guest.");
                 }
                 newRecipe.getGuests().add(new UserRecipe(guest, newRecipe));
             }
