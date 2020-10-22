@@ -1,20 +1,14 @@
 package com.lambdaschool.secretrecipe;
 
-import com.github.javafaker.Faker;
-import com.github.javafaker.service.FakeValuesService;
-import com.github.javafaker.service.RandomService;
-import com.lambdaschool.secretrecipe.models.Role;
-import com.lambdaschool.secretrecipe.models.User;
-import com.lambdaschool.secretrecipe.models.UserRoles;
-import com.lambdaschool.secretrecipe.models.Useremail;
+import com.lambdaschool.secretrecipe.models.*;
+import com.lambdaschool.secretrecipe.services.IngredientService;
+import com.lambdaschool.secretrecipe.services.RecipeService;
 import com.lambdaschool.secretrecipe.services.RoleService;
 import com.lambdaschool.secretrecipe.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Locale;
 
 /**
  * SeedData puts both known and random data into the database. It implements CommandLineRunner.
@@ -25,7 +19,7 @@ import java.util.Locale;
 @Transactional
 @Component
 public class SeedData
-    implements CommandLineRunner
+        implements CommandLineRunner
 {
     /**
      * Connects the Role Service to this process
@@ -39,6 +33,12 @@ public class SeedData
     @Autowired
     UserService userService;
 
+    @Autowired
+    RecipeService recipeService;
+
+    @Autowired
+    IngredientService ingredientService;
+
     /**
      * Generates test, seed data for our application
      * First a set of known data is seeded into our database.
@@ -51,117 +51,63 @@ public class SeedData
     @Transactional
     @Override
     public void run(String[] args) throws
-                                   Exception
+            Exception
     {
         userService.deleteAll();
         roleService.deleteAll();
+        recipeService.deleteAll();
+        ingredientService.deleteAll();
+
         Role r1 = new Role("admin");
         Role r2 = new Role("user");
-        Role r3 = new Role("data");
 
         r1 = roleService.save(r1);
         r2 = roleService.save(r2);
-        r3 = roleService.save(r3);
 
         // admin, data, user
         User u1 = new User("admin",
-            "password",
-            "admin@lambdaschool.local");
+                "password",
+                "admin@lambdaschool.local");
         u1.getRoles()
-            .add(new UserRoles(u1,
-                r1));
+                .add(new UserRoles(u1,
+                        r1));
         u1.getRoles()
-            .add(new UserRoles(u1,
-                r2));
-        u1.getRoles()
-            .add(new UserRoles(u1,
-                r3));
+                .add(new UserRoles(u1,
+                        r2));
         u1.getUseremails()
-            .add(new Useremail(u1,
-                "admin@email.local"));
+                .add(new Useremail(u1,
+                        "admin@email.local"));
         u1.getUseremails()
-            .add(new Useremail(u1,
-                "admin@mymail.local"));
+                .add(new Useremail(u1,
+                        "admin@mymail.local"));
 
         userService.save(u1);
 
-        // data, user
-        User u2 = new User("cinnamon",
-            "1234567",
-            "cinnamon@lambdaschool.local");
-        u2.getRoles()
-            .add(new UserRoles(u2,
-                r2));
-        u2.getRoles()
-            .add(new UserRoles(u2,
-                r3));
-        u2.getUseremails()
-            .add(new Useremail(u2,
-                "cinnamon@mymail.local"));
-        u2.getUseremails()
-            .add(new Useremail(u2,
-                "hops@mymail.local"));
-        u2.getUseremails()
-            .add(new Useremail(u2,
-                "bunny@email.local"));
+        User u2 = new User("mother", "password", "mom@generic.co");
+        u2.getRoles().add(new UserRoles(u2, r2));
+
         userService.save(u2);
 
-        // user
-        User u3 = new User("barnbarn",
-            "ILuvM4th!",
-            "barnbarn@lambdaschool.local");
-        u3.getRoles()
-            .add(new UserRoles(u3,
-                r2));
-        u3.getUseremails()
-            .add(new Useremail(u3,
-                "barnbarn@email.local"));
+        User u3 = new User("junior", "password", "kid@generic.co");
+        u3.getRoles().add(new UserRoles(u3, r2));
+
         userService.save(u3);
 
-        User u4 = new User("puttat",
-            "password",
-            "puttat@school.lambda");
-        u4.getRoles()
-            .add(new UserRoles(u4,
-                r2));
-        userService.save(u4);
+        Recipe rec1 = new Recipe("Mom's chicken parmesan", "Mom", "step 1: do things\nstep 2: do more things", "dinner");
+        rec1.setOwner(u2);
+        rec1.getGuests().add(new UserRecipe(u3, rec1));
+        rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("chicken")));
+        rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("parmesan")));
+        u2.getOwnerrecipes().add(rec1);
 
-        User u5 = new User("misskitty",
-            "password",
-            "misskitty@school.lambda");
-        u5.getRoles()
-            .add(new UserRoles(u5,
-                r2));
-        userService.save(u5);
+        recipeService.saveDirect(rec1);
 
-        if (false)
-        {
-            // using JavaFaker create a bunch of regular users
-            // https://www.baeldung.com/java-faker
-            // https://www.baeldung.com/regular-expressions-java
+        Recipe rec2 = new Recipe("Junior's fruit cocktail", "Junior", "put the lime in the coconut and shake it all up", "drinks");
+        rec2.setOwner(u3);
+        rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("lime")));
+        rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("coconut")));
+        u3.getOwnerrecipes().add(rec2);
 
-            FakeValuesService fakeValuesService = new FakeValuesService(new Locale("en-US"),
-                new RandomService());
-            Faker nameFaker = new Faker(new Locale("en-US"));
-
-            for (int i = 0; i < 25; i++)
-            {
-                new User();
-                User fakeUser;
-
-                fakeUser = new User(nameFaker.name()
-                    .username(),
-                    "password",
-                    nameFaker.internet()
-                        .emailAddress());
-                fakeUser.getRoles()
-                    .add(new UserRoles(fakeUser,
-                        r2));
-                fakeUser.getUseremails()
-                    .add(new Useremail(fakeUser,
-                        fakeValuesService.bothify("????##@gmail.com")));
-                userService.save(fakeUser);
-            }
-        }
+        recipeService.saveDirect(rec2);
     }
 }
