@@ -3,7 +3,9 @@ package com.lambdaschool.secretrecipe.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lambdaschool.secretrecipe.SecretRecipeApplication;
 import com.lambdaschool.secretrecipe.models.*;
+import com.lambdaschool.secretrecipe.repository.UserRepository;
 import com.lambdaschool.secretrecipe.services.RecipeService;
+import com.lambdaschool.secretrecipe.services.UserService;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -45,6 +48,9 @@ public class RecipeControllerUnitTest {
 
     @MockBean
     private RecipeService recipeService;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private List<Recipe> recipes = new ArrayList<>();
 
@@ -116,8 +122,8 @@ public class RecipeControllerUnitTest {
 
     @Test
     public void listAuthedRecipes () throws Exception {
+        Mockito.when(userRepository.findByUsername(anyString())).thenReturn(new User("moe", "larry", "curly"));
         Mockito.when(recipeService.findMinimalsByOwner(any(User.class))).thenReturn(minimals);
-        System.out.println(minimals);
 
         String tr = mockMvc.perform(MockMvcRequestBuilders
                 .get("/recipes/all")
@@ -130,7 +136,7 @@ public class RecipeControllerUnitTest {
 
     @Test
     public void getRecipeById() throws Exception {
-        Mockito.when(recipeService.findById(1L)).thenReturn(recipes.get(0));
+        Mockito.when(recipeService.findMinimalById(1L)).thenReturn(minimals.get(0));
 
         String tr = mockMvc.perform(MockMvcRequestBuilders
                 .get("/recipes/1")
