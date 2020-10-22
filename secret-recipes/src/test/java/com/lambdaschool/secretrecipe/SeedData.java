@@ -96,16 +96,16 @@ public class SeedData
         Recipe rec1 = new Recipe("Mom's chicken parmesan", "Mom", "step 1: do things\nstep 2: do more things", "dinner");
         rec1.setOwner(u2);
         rec1.getGuests().add(new UserRecipe(u3, rec1));
-        rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("chicken")));
-        rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("parmesan")));
+        //rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("chicken", 1)));
+        //rec1.getIngredients().add(new RecipeIngredient(rec1, new Ingredient("parmesan", 2)));
         u2.getOwnerrecipes().add(rec1);
 
         recipeService.saveDirect(rec1);
 
         Recipe rec2 = new Recipe("Junior's fruit cocktail", "Junior", "put the lime in the coconut and shake it all up", "drinks");
         rec2.setOwner(u3);
-        rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("lime")));
-        rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("coconut")));
+        //rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("lime")));
+        //rec2.getIngredients().add(new RecipeIngredient(rec2, new Ingredient("coconut")));
         u3.getOwnerrecipes().add(rec2);
 
         recipeService.saveDirect(rec2);

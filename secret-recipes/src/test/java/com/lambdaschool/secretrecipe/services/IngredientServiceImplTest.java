@@ -26,10 +26,10 @@ import static junit.framework.TestCase.assertEquals;
 public class IngredientServiceImplTest {
 
     @Autowired
-    private IngredientService ingredientService;
+    IngredientService ingredientService;
 
     @MockBean
-    private IngredientRepository ingredientRepository;
+    IngredientRepository ingredientRepository;
 
     @MockBean
     HelperFunctions helperFunctions;
@@ -83,8 +83,8 @@ public class IngredientServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void findByIdNotFound() {
-        Mockito.when(ingredientRepository.findById(11L)).thenReturn(Optional.empty());
-        assertEquals("Sugar", ingredientService.findById(11).getName());
+        Mockito.when(ingredientRepository.findById(1000L)).thenReturn(Optional.empty());
+        assertEquals("Sugar", ingredientService.findById(1000).getName());
     }
 
     @Test
