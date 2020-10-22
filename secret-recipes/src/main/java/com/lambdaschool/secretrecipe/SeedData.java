@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * after the application context has been loaded.
  */
 @Transactional
-@Component
+//@Component
 public class SeedData
     implements CommandLineRunner
 {
