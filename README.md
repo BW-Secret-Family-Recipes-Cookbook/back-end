@@ -54,29 +54,13 @@ Requires:
     "category": "category",
     "ingredients":
     [
-        {
-            "ingredient": {
-                "name": "ingredient 1"
-            }
-        },
-        {
-            "ingredient": {
-                "name": "ingredient 2"
-            }
-        }
+        "ingredient 1"
+        "ingredient 2"
     ],
     "guests":
     [
-        {
-            "user": {
-                "username": "guest name 1"
-            }
-        },
-        {
-            "user": {
-                "username": "guest name 2"
-            }
-        }
+        "guest name 1"
+        "guest name 2"
     ]
 }
 ```
@@ -98,29 +82,13 @@ Requires all of:
     "category": "category",
     "ingredients":
     [
-        {
-            "ingredient": {
-                "name": "ingredient 1"
-            }
-        },
-        {
-            "ingredient": {
-                "name": "ingredient 2"
-            }
-        }
+        "ingredient 1"
+        "ingredient 2"
     ],
     "guests":
     [
-        {
-            "user": {
-                "username": "guest name 1"
-            }
-        },
-        {
-            "user": {
-                "username": "guest name 2"
-            }
-        }
+        "guest name 1"
+        "guest name 2"
     ]
 }
 ```
@@ -142,29 +110,13 @@ Requires any of:
     "category": "category",
     "ingredients":
     [
-        {
-            "ingredient": {
-                "name": "ingredient 1"
-            }
-        },
-        {
-            "ingredient": {
-                "name": "ingredient 2"
-            }
-        }
+        "ingredient 1"
+        "ingredient 2"
     ],
     "guests":
     [
-        {
-            "user": {
-                "username": "guest name 1"
-            }
-        },
-        {
-            "user": {
-                "username": "guest name 2"
-            }
-        }
+        "guest name 1"
+        "guest name 2"
     ]
 }
 ```
